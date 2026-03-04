@@ -1,0 +1,92 @@
+2.INMP441	ESP32 GPIO
+VDD	3.3V
+GND	GND (different than L/R)
+SCK	GPIO26
+WS	GPIO22
+SD	GPIO34	
+L/R	GND	
+​
+amplifier to esp32
+LRC (WS) -> GPIO 22 (Connect both Mic WS and Amp LRC here).
+BCLK (SCK) -> GPIO 26 (Connect both Mic SCK and Amp BCLK here).
+DIN -> GPIO 25 (This is the new connection for Data IN).
+VIN -> 5V (VIN)
+GND -> GND
+SD  -> 5V ( this is for no jittering during power on and off)
+Note: Twist the bclk and lrc wire together so that gittering reduces in the speaker
+
+Driver(L298N) to ESP32
+Motor Pairs (Parallel):
+Left Front & Left Back motors -> Connect together to OUT1 & OUT2.
+Right Front & Right Back motors -> Connect together to OUT3 & OUT4.
+
+Control Pins:
+Left Motor: IN1=GPIO 13, IN2=GPIO 12, ENA=GPIO 19 (PWM)
+Right Motor: IN3=GPIO 14, IN4=GPIO 27, ENB=GPIO 18 (PWM)
+
+Power (CRITICAL SAFETY):
+11.1V Battery (+) to L298N 12V Input.
+11.1V Battery (-) to L298N GND.
+L298N 5V Output -> ESP32 VIN/5V pin. (Powers the ESP32)
+L298N GND -> ESP32 GND. (Common Ground)
+
+                        OR
+
+Driver(BTS7960) to ESP32
+
+Battery to Buck converter
+B+ ----> IN+
+B- ----> IN-    
+
+Buck Converter → Drivers & ESP32
+Shows EXACTLY:
+
+Buck OUT+ (5V) goes to:
+BTS7960 Driver #1: VCC, L_EN, R_EN
+BTS7960 Driver #2: VCC, L_EN, R_EN
+ESP32 Board: 5V pin
+
+BTS7960 Driver #1 to ESP32
+L_PWM -> GPIO 13
+R_PWM -> GPIO 12
+
+BTS7960 Driver #2 to ESP32
+L_PWM -> GPIO 14
+R_PWM -> GPIO 27
+
+Buck OUT- (GND) goes to both drivers' GND pins
+
+Driver to Battery
+B+ ----> 12V
+B- ----> GND
+
+Driver to Motor
+M+ ----> Motor +
+M- ----> Motor -    
+
+
+
+ESP32 -------> PCA9685 (Servo Driver)
+Step 1: Power the Motors (Green Terminal)
+ Buck (+) -> Green Terminal (V+)
+ Buck (-) -> Green Terminal (GND/Other Hole)
+ Capacitor -> Screwed into Green Terminal (Red to V+, Black to GND)
+Step 2: Power the Chip & Signal (Side Pins)
+ ESP32 3.3V (or 5V) -> Side VCC (Powers the chip logic)
+ ESP32 GND -> Side GND (Common ground)
+ ESP32 GPIO 15 -> Side SDA
+ ESP32 GPIO 14 -> Side SCL
+Step 3: Plug in Servos
+
+Black/Brown wire faces OUT/BOTTOM.
+
+ Left Shoulder -> Port 0
+ Left Elbow -> Port 1
+ Right Shoulder -> Port 2
+ Right Elbow -> Port 3
+
+IR sensor (1 pcs) with ESP32 (connected with motors:
+IR sensor ----> ESP32
+VCC to 5v/3V3 in esp32
+GND to GND
+OUT to GPIO 35

@@ -1,0 +1,768 @@
+:root {
+    --bg-color: #0d1117;
+    --card-bg: rgba(22, 27, 34, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --primary-color: #00f0ff;
+    /* Cyberpunk Cyan */
+    --accent-color: #7000ff;
+    /* Neon Purple */
+    --danger-color: #ff003c;
+    --text-main: #e6edf3;
+    --text-dim: #8b949e;
+    --font-head: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    /* Prevent text selection on touch */
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(112, 0, 255, 0.1) 0%, transparent 20%);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--primary-color);
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.nav-val {
+    font-family: var(--font-head);
+    color: var(--primary-color);
+    font-size: 1rem;
+    min-width: 40px;
+    /* Prevent jumping */
+    text-align: right;
+}
+
+@media (max-width: 480px) {
+    .header-right {
+        gap: 8px;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .nav-stat {
+        display: none;
+        /* Hide on very small screens? No, user wants it. */
+        display: flex;
+    }
+
+    /* On mobile, maybe hide the label to save space? Or make it smaller */
+    .header-right {
+        flex-direction: row;
+        /* Keep row */
+        gap: 8px;
+    }
+
+    .nav-label {
+        display: none;
+        /* Hide label "OBS:" on mobile if space is tight? */
+    }
+
+    /* Better: Use icons? No, just keep text small. */
+    .nav-label {
+        font-size: 0.7rem;
+        display: inline;
+    }
+
+    #status-text {
+        font-size: 0.7rem;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+}
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--danger-color);
+    margin-left: 5px;
+    transition: all 0.3s ease;
+}
+
+.status-dot.connected {
+    background-color: #00ff66;
+    box-shadow: 0 0 8px #00ff66;
+}
+
+#status-text {
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    padding-bottom: 70px;
+    /* Clear Bottom Nav */
+}
+
+.camera-feed-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-overlay {
+    color: var(--text-dim);
+    font-family: var(--font-head);
+    letter-spacing: 1px;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 5px;
+    flex: 1;
+}
+
+.control-group {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.control-group h3 {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* D-PAD STYLING */
+.d-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.btn-control {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+}
+
+.btn-control:active,
+.btn-control.active {
+    background: var(--primary-color);
+    color: #000;
+    box-shadow: 0 0 15px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-control.up {
+    grid-column: 2;
+    grid-row: 1;
+    border-radius: 8px 8px 4px 4px;
+}
+
+.btn-control.down {
+    grid-column: 2;
+    grid-row: 3;
+    border-radius: 4px 4px 8px 8px;
+}
+
+.btn-control.left {
+    grid-column: 1;
+    grid-row: 2;
+    border-radius: 8px 4px 4px 8px;
+}
+
+.btn-control.right {
+    grid-column: 3;
+    grid-row: 2;
+    border-radius: 4px 8px 8px 4px;
+}
+
+.btn-control.stop {
+    grid-column: 2;
+    grid-row: 2;
+    background: rgba(255, 0, 60, 0.2);
+    font-weight: bold;
+    font-size: 0.8rem;
+    border-color: rgba(255, 0, 60, 0.4);
+}
+
+.btn-control.stop:active {
+    background: var(--danger-color);
+}
+
+.arrow {
+    border: solid currentColor;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.arrow.up {
+    transform: rotate(-135deg);
+}
+
+.arrow.down {
+    transform: rotate(45deg);
+}
+
+.arrow.left {
+    transform: rotate(135deg);
+}
+
+.arrow.right {
+    transform: rotate(-45deg);
+}
+
+/* ACTIONS STYLING */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-action {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-action:active {
+    background: var(--text-main);
+    color: #000;
+}
+
+.btn-action.warning {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    margin-top: auto;
+}
+
+.btn-action.warning:active {
+    background: var(--danger-color);
+    color: #fff;
+    box-shadow: 0 0 20px var(--danger-color);
+}
+
+/* TELEMETRY REMOVED - NOW IN HEADER */
+
+@media (max-width: 400px) {
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .d-pad {
+        height: 200px;
+        /* Force height on mobile */
+    }
+}
+
+/* --- TABS --- */
+.tab-content {
+    display: none;
+    height: 100%;
+    flex-direction: column;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+/* --- BOTTOM NAV --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    margin-bottom: 5px;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 255, 136, 0.2);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-btn .icon {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+
+.nav-btn.active {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+/* --- CHAT INTERFACE (Messaging App Style) --- */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 140px);
+    /* Minus Header and Nav */
+    overflow: hidden;
+    background: #0d0d0d;
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 5px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message.ai {
+    justify-content: flex-start;
+}
+
+.message.system {
+    justify-content: center;
+    opacity: 0.8;
+}
+
+.message.system .bubble {
+    background: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+    box-shadow: none;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.message .bubble {
+    max-width: 75%;
+    padding: 12px 18px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.message.user .bubble {
+    background: #00ffcc;
+    /* Bright Neon Cyan/Green */
+    color: #000;
+    border-bottom-right-radius: 4px;
+    font-weight: 700;
+    /* Bolder text */
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+}
+
+.message.ai .bubble {
+    background: #333;
+    /* Slightly lighter grey */
+    color: #fff;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #555;
+}
+
+.chat-input-area {
+    padding: 10px 15px;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    /* Center items vertically */
+    gap: 10px;
+    margin-bottom: 10px;
+    margin-top: auto;
+    /* Push to bottom if needed */
+    border-top: 1px solid #333;
+}
+
+#chat-input {
+    flex: 1;
+    background: #333;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 20px;
+    margin: 0;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    height: 45px;
+    min-height: 45px;
+    max-height: 150px;
+    resize: none;
+    line-height: 1.4;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar for textarea */
+#chat-input::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chat-input::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+#chat-input:focus {
+    box-shadow: 0 0 0 2px var(--neon-cyan);
+}
+
+.btn-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#btn-send {
+    background: linear-gradient(135deg, var(--neon-cyan), #00c2a8);
+    color: #000;
+}
+
+#btn-send:hover {
+    box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+#btn-mic {
+    background: #333;
+    color: var(--text-dim);
+    border: 1px solid #444;
+}
+
+#btn-stop {
+    background: #ff4444;
+    margin-right: 5px;
+    display: none;
+    /* Hidden by default */
+}
+
+#btn-mic.listening {
+    background: var(--danger-color);
+    color: #fff;
+    box-shadow: 0 0 15px var(--danger-color);
+    animation: pulse 1.5s infinite;
+    border-color: var(--danger-color);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* --- ARM PANEL REDESIGN --- */
+.arm-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.unified-arms {
+    width: 100%;
+    padding: 10px;
+}
+
+.arm-columns {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    gap: 10px;
+}
+
+.arm-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 10px 5px;
+}
+
+.arm-col h4 {
+    color: var(--text-dim);
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Vertical Section (Side-by-Side) */
+.sliders-vertical-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    height: 160px;
+    /* Fixed height for sliders */
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.vertical-slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 40px;
+    justify-content: space-between;
+}
+
+.vertical-slider-container label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+
+/* Horizontal Section (Stacked) */
+.horizontal-section {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.slider-row.compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.slider-row.compact label {
+    font-size: 0.7rem;
+    width: 40px;
+    color: var(--text-dim);
+}
+
+.slider-row.compact input {
+    flex: 1;
+}
+
+/* Value Display Styling */
+.val-display {
+    font-family: var(--font-head);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+
+.val-display.inline {
+    width: 30px;
+    text-align: right;
+    margin: 0;
+}
+
+/* Vertical Range Input Styling */
+input[type=range][orient=vertical] {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    appearance: slider-vertical;
+    /* Still useful for some browsers, but writing-mode is key */
+    width: 8px;
+    height: 120px;
+    /* Slider height */
+    padding: 0 5px;
+    background: transparent;
+}
+
+/* MACROS BOTTOM */
+.macros-bottom {
+    margin-top: 0;
+    padding: 10px;
+}
+
+.action-buttons.horizontal {
+    flex-direction: row;
+    height: 50px;
+}
+
+.action-buttons.horizontal .btn-action {
+    font-size: 0.9rem;
+}
+
+/* --- MOBILE LANDSCAPE ADJUSTMENTS --- */
+@media (max-height: 500px) and (orientation: landscape) {
+    .sliders-row {
+        height: 140px;
+        /* Shorter on landscape */
+    }
+
+    input[type=range][orient=vertical] {
+        height: 100px;
+    }
+}
+
+@media (max-width: 400px) {
+    .arm-columns {
+        flex-direction: column;
+        /* Stack arms on very narrow screens */
+    }
+
+    .sliders-row {
+        height: 150px;
+    }
+}

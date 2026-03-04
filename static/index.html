@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROVA Control</title>
+    <link rel="stylesheet" href="/static/style.css?v=5"> <!-- EXPLICIT STATIC PATH -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>ROVA <span class="status-dot"></span></h1>
+            </div>
+            <div class="header-right">
+                <div class="nav-stat">
+                    <span class="nav-label">OBS:</span>
+                    <span class="nav-val" id="dist-val">-- cm</span>
+                </div>
+                <div class="nav-stat">
+                    <span class="nav-label">LEGS:</span>
+                    <span class="nav-val" id="temp-legs-val">-- °C</span>
+                </div>
+                <div class="nav-stat">
+                    <span class="nav-label">ARMS:</span>
+                    <span class="nav-val" id="temp-arms-val">-- °C</span>
+                </div>
+                <div id="status-text">Disconnected</div>
+            </div>
+        </header>
+
+        <main>
+            <!-- MOVEMENT TAB -->
+            <div id="tab-movement" class="tab-content active">
+                <section class="camera-feed-placeholder">
+                    <!-- VIDEO STREAM -->
+                    <img src="/video_feed" alt="Camera Data Link" class="video-stream"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="video-overlay" style="display: none;">
+                        <p>Camera Feed (Initializing...)</p>
+                    </div>
+                </section>
+
+                <section class="controls-grid">
+                    <!-- Movement Controls -->
+                    <div class="control-group movement">
+                        <h3>Movement</h3>
+                        <div class="d-pad">
+                            <button class="btn-control up" data-cmd="F" data-dur="0"><i class="arrow up"></i></button>
+                            <button class="btn-control left" data-cmd="L" data-dur="0"><i
+                                    class="arrow left"></i></button>
+                            <button class="btn-control stop" data-cmd="S" data-dur="0">STOP</button>
+                            <button class="btn-control right" data-cmd="R" data-dur="0"><i
+                                    class="arrow right"></i></button>
+                            <button class="btn-control down" data-cmd="B" data-dur="0"><i
+                                    class="arrow down"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Stop Only in Movement -->
+                    <div class="control-group actions">
+                        <button class="btn-action warning full-width" data-type="move" data-cmd="S" data-dur="0">🛑
+                            E-STOP</button>
+                    </div>
+                </section>
+                <div style="text-align: center; color: #555; font-size: 0.7rem; margin-top: 20px;">
+                    Debug: <span id="debug-status">Waiting...</span>
+                </div>
+            </div>
+
+            <!-- ARMS TAB -->
+            <div id="tab-arms" class="tab-content" style="display: none;">
+                <section class="camera-feed-placeholder">
+                    <!-- VIDEO STREAM -->
+                    <img src="/video_feed" alt="Camera Data Link" class="video-stream"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="video-overlay" style="display: none;">
+                        <p>Camera Feed (Arms View)</p>
+                    </div>
+                </section>
+
+                <section class="controls-grid arm-panel">
+                    <!-- SINGLE GRID FOR ARMS -->
+                    <div class="control-group unified-arms">
+                        <h3>Arm Controls</h3>
+
+                        <div class="arm-columns">
+                            <!-- LEFT ARM -->
+                            <div class="arm-col">
+                                <h4>Left Arm</h4>
+                                <!-- Vertical Section (Shoulder/Elbow) -->
+                                <div class="sliders-vertical-row">
+                                    <div class="vertical-slider-container">
+                                        <span class="val-display" id="val-LS">90°</span>
+                                        <input type="range" orient="vertical" min="0" max="180" value="90"
+                                            class="arm-slider vertical" data-joint="LS">
+                                        <label>Shoulder</label>
+                                    </div>
+                                    <div class="vertical-slider-container">
+                                        <span class="val-display" id="val-LE">0°</span>
+                                        <input type="range" orient="vertical" min="0" max="180" value="0"
+                                            class="arm-slider vertical" data-joint="LE">
+                                        <label>Elbow</label>
+                                    </div>
+                                </div>
+                                <!-- Horizontal Section (Wrist/Gripper) -->
+                                <div class="horizontal-section">
+                                    <div class="slider-row compact">
+                                        <label>Wrist</label>
+                                        <input type="range" min="0" max="110" value="90" class="arm-slider"
+                                            data-joint="LW">
+                                        <span class="val-display inline" id="val-LW">90°</span>
+                                    </div>
+                                    <div class="slider-row compact">
+                                        <label>Gripper</label>
+                                        <input type="range" min="0" max="45" value="45" class="arm-slider"
+                                            data-joint="LG">
+                                        <span class="val-display inline" id="val-LG">45°</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT ARM -->
+                            <div class="arm-col">
+                                <h4>Right Arm</h4>
+                                <!-- Vertical Section -->
+                                <div class="sliders-vertical-row">
+                                    <div class="vertical-slider-container">
+                                        <span class="val-display" id="val-RS">90°</span>
+                                        <input type="range" orient="vertical" min="0" max="180" value="90"
+                                            class="arm-slider vertical" data-joint="RS">
+                                        <label>Shoulder</label>
+                                    </div>
+                                    <div class="vertical-slider-container">
+                                        <span class="val-display" id="val-RE">180°</span>
+                                        <input type="range" orient="vertical" min="0" max="180" value="180"
+                                            class="arm-slider vertical" data-joint="RE">
+                                        <label>Elbow</label>
+                                    </div>
+                                </div>
+                                <!-- Horizontal Section -->
+                                <div class="horizontal-section">
+                                    <div class="slider-row compact">
+                                        <label>Wrist</label>
+                                        <input type="range" min="0" max="180" value="90" class="arm-slider"
+                                            data-joint="RW">
+                                        <span class="val-display inline" id="val-RW">90°</span>
+                                    </div>
+                                    <div class="slider-row compact">
+                                        <label>Gripper</label>
+                                        <input type="range" min="0" max="45" value="45" class="arm-slider"
+                                            data-joint="RG">
+                                        <span class="val-display inline" id="val-RG">45°</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MACROS AT BOTTOM -->
+                    <div class="control-group actions macros-bottom">
+                        <h3>Macros</h3>
+                        <div class="action-buttons horizontal">
+                            <button class="btn-action" data-type="arm" data-cmd="UP">🙌 Up</button>
+                            <button class="btn-action" data-type="arm" data-cmd="DOWN">👇 Down</button>
+                            <button class="btn-action" data-type="arm" data-cmd="WAVE">👋 Wave</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- CHAT TAB -->
+            <div id="tab-chat" class="tab-content" style="display: none;">
+                <div class="chat-container">
+                    <div id="chat-history" class="chat-history">
+                        <div class="message ai">
+                            <div class="bubble">Hello! I am ready to help.</div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <button id="btn-mic" class="btn-icon">🎤</button>
+                        <button id="btn-stop" class="btn-icon"
+                            style="background: #ff4444; margin-right: 5px;">🛑</button>
+                        <textarea id="chat-input" placeholder="Type a message..." rows="1"></textarea>
+                        <button id="btn-send" class="btn-icon">➤</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- REMINDERS TAB REMOVED -->
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="tab-movement">
+            <span class="icon">🎮</span>
+            <span class="text">Move</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-arms">
+            <span class="icon">🦾</span>
+            <span class="text">Arms</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-chat">
+            <span class="icon">💬</span>
+            <span class="text">Chat</span>
+        </button>
+        <!-- ALERTS NAV REMOVED -->
+    </nav>
+    </div>
+    <!-- ALARM MODAL REMOVED -->
+    <script src="/static/script.js?v=5"></script> <!-- EXPLICIT STATIC PATH -->
+</body>
+
+</html>

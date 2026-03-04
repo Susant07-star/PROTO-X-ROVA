@@ -1,0 +1,6 @@
+ROVA (Robotic Omnivehicle Assistant) - Part of PROTO-X project
+Voice-controlled robot, has microphone and speaker
+
+Creators: 6 students from Takshashila Academy, Kathmandu, Nepal
+Team: Sushant Bhandari (leader), Neema Sherpa, Uttam Shrestha, Nishant Bhandari, Prithivi Raiymajhi, Subash Shrestha
+Principal: Mrs. Netra Neupane
